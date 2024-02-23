@@ -1,0 +1,11 @@
+/Users/joshuawalter/Documents/rust/stock-util/target/debug/deps/libcc-f8abe419dd08ef99.rmeta: /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/lib.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/mod.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/find_tools.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/command_helpers.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/tool.rs
+
+/Users/joshuawalter/Documents/rust/stock-util/target/debug/deps/libcc-f8abe419dd08ef99.rlib: /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/lib.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/mod.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/find_tools.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/command_helpers.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/tool.rs
+
+/Users/joshuawalter/Documents/rust/stock-util/target/debug/deps/cc-f8abe419dd08ef99.d: /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/lib.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/mod.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/find_tools.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/command_helpers.rs /Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/tool.rs
+
+/Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/lib.rs:
+/Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/mod.rs:
+/Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/windows/find_tools.rs:
+/Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/command_helpers.rs:
+/Users/joshuawalter/.cargo/registry/src/index.crates.io-6f17d22bba15001f/cc-1.0.86/src/tool.rs:
