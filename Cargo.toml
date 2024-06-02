@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.0", features = ["derive"] }
+postman_ureq = { git = "https://github.com/jjwalter368/postman_ureq_jjw368.git" }
+serde_json = "1.0.114"
 ureq = "2.9.6"
