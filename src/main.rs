@@ -2,7 +2,7 @@ use clap::Parser;
 use ureq;
 use serde_json::{Result, Value};
 use std::{fmt, result};
-
+use std::str::FromStr;
 
 
 // POSTMAN ureq
@@ -18,20 +18,32 @@ pub fn postman_ureq_str(url: &str) -> String {
 // turn this into a struct with an option to update or sum
 fn parse_fundamental(source: Value) -> FundamentalData {
     let mut output: FundamentalData = FundamentalData::default();
-   
-    for x in source["timeseries"]["result"].as_array().unwrap() {
-        match x[0]["meta"]["type"][0].to_string().as_str() {
-            "quarterlyPeRatio" => output.quarterlyPeRatio = x[0]["quarterlyPeRatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyForwardPeRatio" => output.quarterlyForwardPeRatio = x[0]["quarterlyForwardPeRatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyPegRatio" => output.quarterlyPegRatio = x[0]["quarterlyPegRatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyPsRatio" => output.quarterlyPeRatio = x[0]["quarterlyPsRatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyMarketCap" => output.quarterlyPeRatio = x[0]["quarterlyMarketCap"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyEnterprisesValueRevenueRatio" => output.quarterlyEnterprisesValueRevenueRatio = x[0]["quarterlyEnterprisesValueRevenueRatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyEnterprisesValueEBITDARatio" => output.quarterlyEnterprisesValueEBITDARatio = x[0]["quarterlyEnterprisesValueEBITDARatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyEnterpriseValue" => output.quarterlyEnterpriseValue = x[0]["quarterlyEnterpriseValue"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            "quarterlyPbRatio" => output.quarterlyPbRatio = x[0]["quarterlyPbRatio"].as_array().unwrap().last().unwrap()["reportedValue"]["raw"].as_f64().unwrap(),
-            _ => continue,
-        }
+    if source["PERatio"] != "None" {
+        output.pe_ratio = source["PERatio"].as_str().expect("pe_ratio, .as_str fail").parse().expect("pe_ratio, .parse() fail"); // f64::from_str(serde_json::from_value::<String>(source["PERatio"].clone()).unwrap().as_str()).unwrap() also works
+    }
+    if source["ForwardPE"] != "None" {
+        output.forward_pe_ratio = source["ForwardPE"].as_str().expect("forward_pe_ratio, .as_str fail").parse().expect("forward_pe_ratio, .parse() fail");
+    }
+    if source["TrailingPE"] != "None" {
+        output.trailing_pe_ratio = source["TrailingPE"].as_str().expect("trailing_pe_ratio, .as_str fail").parse().expect("trailingpe_ratio, .parse() fail");
+    }
+    if source["PriceToBookRatio"] != "None" {
+        output.pb_ratio = source["PriceToBookRatio"].as_str().expect("pb_ratio, .as_str fail").parse().expect("pb_ratio, .parse() fail");
+    }
+    if source["PEGRatio"] != "None" {
+        output.peg_ratio = source["PEGRatio"].as_str().expect("peg_ratio, .as_str fail").parse().expect("peg_ratio, .parse() fail");
+    }
+    if source["DividendYield"] != "None" {
+        output.dividend_yield = source["DividendYield"].as_str().expect("dividend_yield, .as_str fail").parse().expect("dividend_yield, .parse() fail");
+    }
+    if source["AnalystTargetPrice"] != "None" {
+        output.analyst_target_price = source["AnalystTargetPrice"].as_str().expect("analyst_target_price, .as_str fail").parse().expect("analyst_target_price, .parse() fail");
+    }
+    if source["200DayMovingAverage"] != "None" {
+        output.twohundred_ma = source["200DayMovingAverage"].as_str().expect("twohundred_ma, .as_str fail").parse().expect("twohundred_ma, .parse() fail");
+    }
+    if source["50DayMovingAverage"] != "None" {
+        output.fifty_ma = source["50DayMovingAverage"].as_str().expect("fifty_ma, .as_str fail").parse().expect("fifty_ma, .parse() fail");
     }
     output
 }
@@ -52,7 +64,7 @@ impl Default for Stock {
 
 impl fmt::Display for Stock {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!( f, "Ticker: \n{}\nPrice Data: \n{}\nFundamental Data: \n{}", self.ticker, self.stock_data.price_data.price, self.stock_data.fundamental_data.quarterlyPegRatio ) //NEED TO CHANGE THE FUNDAMENTAL DATA
+        write!( f, "Ticker: \n\n{}\n\n{}", self.ticker, self.stock_data )
     } 
 }
 impl Stock {
@@ -69,8 +81,9 @@ struct StockData {
 }
 impl fmt::Display for StockData {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!( f, "Price Data: \n{}\n Fundamental Data: \n{}", self.price_data.price, self.fundamental_data.quarterlyMarketCap ) //NEED TO CHANGE THE FUNDAMENTAL DATA
+        write!( f, "Price Data: \n{}\n\nFundamental Data: \n\n{}", self.price_data.price, self.fundamental_data )
     }
+}
 impl Default for StockData {
     fn default() -> StockData {
         let output: StockData = StockData {
@@ -88,28 +101,35 @@ impl StockData {
 }
 
 struct FundamentalData {
-    quarterlyPeRatio: f64,
-    quarterlyForwardPeRatio: f64,
-    quarterlyPegRatio: f64,
-    quarterlyPsRatio: f64,
-    quarterlyMarketCap: f64,
-    quarterlyEnterprisesValueRevenueRatio: f64,
-    quarterlyEnterprisesValueEBITDARatio: f64,
-    quarterlyEnterpriseValue: f64,
-    quarterlyPbRatio: f64,
+    pe_ratio: f64,
+    forward_pe_ratio: f64,
+    trailing_pe_ratio: f64,
+    pb_ratio: f64,
+    peg_ratio: f64,
+    dividend_yield: f64,
+    analyst_target_price: f64,
+    twohundred_ma: f64,
+    fifty_ma: f64,
 }
+
+impl fmt::Display for FundamentalData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!( f, "P/E: {}\nForward P/E: {}\nTrailing P/E: {}\nP/B: {}\nPEG: {}\nDividend Yield: {}\nAnalyst Target Price: {}\n200 MA: {}\n50 MA: {}", self.pe_ratio, self.forward_pe_ratio, self.trailing_pe_ratio, self.pb_ratio, self.peg_ratio, self.dividend_yield, self.analyst_target_price, self.twohundred_ma, self.fifty_ma )
+    } 
+}
+
 impl Default for FundamentalData {
     fn default() -> FundamentalData {
         let output: FundamentalData = FundamentalData {
-            quarterlyPeRatio: 0.00,
-            quarterlyForwardPeRatio: 0.00,
-            quarterlyPegRatio: 0.00,
-            quarterlyPsRatio: 0.00,
-            quarterlyMarketCap: 0.00,
-            quarterlyEnterprisesValueRevenueRatio: 0.00,
-            quarterlyEnterprisesValueEBITDARatio: 0.00,
-            quarterlyEnterpriseValue: 0.00,
-            quarterlyPbRatio: 0.00,
+            pe_ratio: 0.00,
+            forward_pe_ratio: 0.00,
+            trailing_pe_ratio: 0.00,
+            pb_ratio: 0.00,
+            peg_ratio: 0.00,
+            dividend_yield: 0.00,
+            analyst_target_price: 0.00,
+            twohundred_ma: 0.00,
+            fifty_ma: 0.00,
         };
         output
     }
@@ -117,7 +137,7 @@ impl Default for FundamentalData {
 impl FundamentalData {
     fn update(&mut self, ticker: String) {
         let fundamental_data: Value;
-        let fundamental: String = format!("https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/{}?merge=false&padTimeSeries=true&period1=493590046&period2=1708996941&type=quarterlyMarketCap%2CtrailingMarketCap%2CquarterlyEnterpriseValue%2CtrailingEnterpriseValue%2CquarterlyPeRatio%2CtrailingPeRatio%2CquarterlyForwardPeRatio%2CtrailingForwardPeRatio%2CquarterlyPegRatio%2CtrailingPegRatio%2CquarterlyPsRatio%2CtrailingPsRatio%2CquarterlyPbRatio%2CtrailingPbRatio%2CquarterlyEnterprisesValueRevenueRatio%2CtrailingEnterprisesValueRevenueRatio%2CquarterlyEnterprisesValueEBITDARatio%2CtrailingEnterprisesValueEBITDARatio&lang=en-US&region=US", ticker);
+        let fundamental: String = format!("https://www.alphavantage.co/query?function=OVERVIEW&symbol={}&apikey=PSEKBJXKRKARVUTR", ticker);
         fundamental_data = postman_ureq_json(fundamental.as_str());
         *self = parse_fundamental(fundamental_data);
     }
@@ -140,7 +160,7 @@ impl PriceData {
         let price: String = format!("https://query1.finance.yahoo.com/v8/finance/chart/{}?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance", ticker);
         price_data = postman_ureq_json(price.as_str());
         let output: PriceData =  PriceData {
-            price: price_data["chart"]["result"][0]["meta"]["regularMarketPrice"].clone().as_f64().expect(".as_f64 on 143 failed")
+            price: price_data["chart"]["result"][0]["meta"]["regularMarketPrice"].clone().as_f64().expect(".as_f64 on 146 failed")
         };
         *self = output;
     }
