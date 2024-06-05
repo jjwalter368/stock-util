@@ -2,7 +2,8 @@ use clap::Parser;
 use ureq;
 use serde_json::{Result, Value};
 use std::{fmt, result};
-use std::str::FromStr;
+use mongodb::{ bson::doc, options::{ ClientOptions, ServerApi, ServerApiVersion }, sync::Client, Collection };
+
 
 
 // POSTMAN ureq
@@ -174,6 +175,36 @@ fn string_single_analysis(ticker: String) -> Stock {
     output
 }
 
+fn mongodb_client() -> Client {
+    let uri = "mongodb+srv://jjw368:%21%2179332021%21%21@cluster0.wkrwa8p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    let mut client_options = ClientOptions::parse(uri).unwrap();
+
+    let server_api = ServerApi::builder().version(ServerApiVersion::V1).build();
+    client_options.server_api = Some(server_api);
+
+    let client = Client::with_options(client_options).unwrap();
+
+    client.database("admin").run_command(doc! { "ping": 1 }, None).unwrap();
+    println!("Pinged your deployment. You successfully connected to MongoDB!");
+
+    client
+}
+
+fn note(ticker: String) -> Result<()>{
+    //mongodb connect
+    let client = mongodb_client();
+    let stock_util_db = client.database("stock-util");
+    let note_collection: mongodb::sync::Collection<mongodb::bson::Document> = stock_util_db.collection("note");
+
+    //pull ticker notes
+    let mut cursor = note_collection.find(doc! {"ticker": ticker}, None);
+
+    for result in cursor.unwrap() {
+        println!("{:?}", result);
+    }
+    //interface to add notes or just read or whatever
+    Ok(())
+}
 
 //CLAP
 #[derive(Parser)]
@@ -209,6 +240,9 @@ fn main() {
     if args.arg1 == String::from("analysis") {
         let query_response: Stock = string_single_analysis(args.arg2);
         println!("{}", query_response);
+    } 
+    else if args.arg1 == String::from("note") {
+        let _ = note(args.arg2);
     }
     else {
         println!("Unfortunatley, we have not created any other features than cargo run -- analysis <arg2>");
