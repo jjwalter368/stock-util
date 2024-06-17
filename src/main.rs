@@ -176,7 +176,7 @@ fn string_single_analysis(ticker: String) -> Stock {
 }
 
 fn mongodb_client() -> Client {
-    let uri = "mongodb+srv://jjw368:%21%2179332021%21%21@cluster0.wkrwa8p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    let uri = "mongodb+srv://stock_util_user:%21%2179332021%21%21@cluster0.wkrwa8p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
     let mut client_options = ClientOptions::parse(uri).unwrap();
 
     let server_api = ServerApi::builder().version(ServerApiVersion::V1).build();
@@ -203,6 +203,7 @@ fn note(ticker: String) -> Result<()>{
         println!("{:?}", result);
     }
     //interface to add notes or just read or whatever
+    
     Ok(())
 }
 
@@ -229,6 +230,10 @@ mod tests {
     fn apple_captive() {
         let result = postman_ureq_str("https://captive.apple.com/");
         assert_eq!(result, "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>\n");
+    }
+    #[test]
+    fn mongodb_client_test() {
+        mongodb_client();
     }
 }
 fn main() {
